@@ -1,0 +1,33 @@
+{
+    "validUser": {
+    "username": "rmgyantra",
+    "password": "rmgy@9999"
+  },
+  "invalidUsers": [
+    { "username": "wronguser", "password": "rmgy@9999", "expected": "failure" },
+    { "username": "rmgyantra", "password": "wrongpass", "expected": "failure" },
+    { "username": "", "password": "", "expected": "failure" }
+  ],
+  "leads":{
+    "leadsName":"Lead",
+    "leadsCompany": "Mphasis",
+    "leadsLeadSource": "Balu",
+    "leadsIndustry": "IT",
+    "leadsPhone": "9876546784",
+    "leadsLeadStatus": "done"
+  },
+  "selectCampaign":{
+    "searchcriteria": "campaignId",
+    "campaignId": "CAM09303",
+    "campaignName":"Campdecadbdfcbaceada"
+  },
+  "campaign":{
+    "campaignName": "cgfgmnbmngnbngmv",
+    "targetSize": "40",
+    "expCloseDate": "2026-03-30"
+  
+  }
+
+
+ 
+}
