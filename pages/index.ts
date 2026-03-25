@@ -7,6 +7,7 @@ export{navigationPage} from '../pages/navigationPage';
 export{selectcampaignPage} from '../pages/selectCampaignPage';
 export{campaignPage} from '../pages/campaignPage';
 export { default as testData } from '../test-data/testdata.json';
+export { default as campaignConfig } from '../test-data/campaignConfig.json';
 
 export { UserAPI } from '../api/UserApi';
 export { CampaignAPI } from '../api/CampaignAPI';

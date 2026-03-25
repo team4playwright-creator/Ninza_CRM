@@ -5,6 +5,7 @@ import { test as base, TestInfo } from '@playwright/test';
 //import { selectcampaignPage } from '../pages/selectCampaignPage';
 //import { campaignPage } from '../pages/campaignPage';
 import testData from '../test-data/testdata.json';
+import campaignConfig from '../test-data/campaignConfig.json';
 import { loginPage, leadsPage, navigationPage,selectcampaignPage, campaignPage} from '../pages/index'; 
 
 type MyFixtures = {
@@ -16,6 +17,7 @@ type MyFixtures = {
   loggedIn: void; 
   screenshotOnFailure: void;
   testData: typeof testData;
+  campaignConfig: typeof campaignConfig;
  
 };
 
@@ -40,6 +42,9 @@ export const test = base.extend<MyFixtures>({
       testData: async ({}, use) => {
         await use(testData);
       },
+      campaignConfig: async ({}, use) => {
+        await use(campaignConfig);
+      },
 
 
       loggedIn: async ({ page }, use) => { //Behavior Fixture
@@ -54,7 +59,7 @@ export const test = base.extend<MyFixtures>({
 
             // Use URL, Username, Password from .env
         await login.navigate(process.env.BASE_URL!);
-        await login.login(process.env.USERNAME!,process.env.PASSWORD!);
+        await login.login(process.env.CRM_USERNAME!,process.env.CRM_PASSWORD!);
         
       
         await use(); // test executes after login

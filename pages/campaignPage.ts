@@ -1,68 +1,81 @@
-import { basePage } from './basePage';
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator,expect } from '@playwright/test';
 
-export class campaignPage extends basePage {
-    readonly expectedCloseDate: Locator;
-    readonly createCampaign: Locator;
-    readonly  date: Locator;
-    readonly campaignName: Locator;
-    readonly targetSize: Locator;
-    readonly submitButton: Locator;
-    readonly tableRows: Locator;
-
-
-    constructor(page: Page) {
-        super(page);
-        this.expectedCloseDate = page.locator('input[name="name"]');
-        this.createCampaign=page.locator("//span[text()='Create Campaign']");
-       this.date=page.locator("//input[@name='expectedCloseDate']");
-       this.campaignName = page.locator('input[name="campaignName"]');
-       this.targetSize = page.locator('input[name="targetSize"]');
-       this.submitButton = page.locator('button[type="submit"]');
-       this.tableRows = page.locator('table.table-striped.table-hover tbody tr');
-   
-    }
-
-   
-       /* async selectDate(date: string) {
-          //  await this.dateInput.click();
-            //await this.page.locator(`text="${date}"`).click();
-            await this.fill(this.date, date);
-
-        }*/
-
-    async createCampaignPage() {
-      
-        await this.click(this.createCampaign);
-    }
-
-    async formFill(campaignData: any,campaignName:string) {
-        await this.fill(this.campaignName, campaignName);
-        await this.fill(this.targetSize, campaignData.targetSize);
-       // await this.selectDate("2026-03-10");
-        await this.fill(this.date, campaignData.expCloseDate);
-
-    }
-    async clickSubmit() {
-        await this.click(this.submitButton);
-     
-      //  await this.page.waitForNavigation();
-    }
-    async waitForTable() {
-        await this.tableRows.first().waitFor({ state: 'visible' });
-    }
-    async validateLeadInTable(campaignName: string) {
+export class campaignPage {
+  
     
-        const campaignNames = await this.tableRows.locator('td:nth-child(2)').allTextContents();
+    readonly page: Page;
+    readonly createcampaignButton: Locator;
+    readonly campaignnameInput: Locator;
+    readonly targetsizeInput: Locator;
+    readonly createButton: Locator;
+    readonly campaignDD: Locator;
+    readonly campaignIdInput: Locator;
+    readonly expectedDate:Locator;
+    readonly searchByCampaign:string;
+    readonly editIcon:Locator;
+    readonly editToolTip:Locator;
+
+constructor(page: Page) {
+    this.page = page;
+    this.createcampaignButton = page.getByRole('button', { name: 'Create Campaign' });
+    this.campaignnameInput = page.locator('input[name="campaignName"]');
+    this.targetsizeInput = page.locator('input[name="targetSize"]');
+    this.createButton = page.getByRole('button', { name: 'Create Campaign' });
+    this.campaignDD=page.locator('select.form-control');
+    this.campaignIdInput=page.getByPlaceholder('Search by Campaign Id');
+    this.expectedDate=page.locator('input[name="expectedCloseDate"]');
+    this.searchByCampaign='Search by Campaign Id';
+    this.editIcon=page.locator('.edit');
+    this.editToolTip=page.locator('[title="Edit"]');
+  }
+
+  //create campaign functionality
+  async createcampaign(campaignnameInput: string, targetsizeInput: string) {
     
-        // Check if the specific campaign name exists
-        if (!campaignNames.includes(campaignName)) {
-            throw new Error(`Campaign "${campaignName}" not found in the table`);
-        } else {
-            console.log(`Campaign "${campaignName}" is successfully displayed in the table`);
-        }
+    await this.createcampaignButton.click();
+    await this.campaignnameInput.fill(campaignnameInput);
+    await this.targetsizeInput.fill(targetsizeInput);
+    await this.expectedDate.click();
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
+    const dateString = futureDate.toISOString().split('T')[0];
+    await this.expectedDate.fill(dateString);
+    await this.createButton.click();
+
+  }
+
+  //Search Campaign functionality
+  async searchcampaign(campaignIdInput: string) {
+    await this.campaignDD.selectOption(this.searchByCampaign);
+    await this.campaignIdInput.click();
+    await this.campaignIdInput.fill(campaignIdInput);//CAM07415
+  }
+
+  //Validate Create Campaign
+   async validateCreateCampaign(campaignName: string) {
+    const row = this.page.locator('tr', {
+    has: this.page.locator('td', { hasText: campaignName })
+    });
+
+    await expect(row).toBeVisible();
+   }
+
+   //Validate Search Campaign
+   async validateSearchCampaign(campaignId: string) {
+     const row = this.page.locator('tr', {
+    has: this.page.locator('td', { hasText: campaignId })
+    });
+
+    await expect(row).toBeVisible();
+   }
+   //Tool Tip Verification
+   async tooltipVerification() {
+        await this.editIcon.hover();
+        await expect(this.editToolTip).toBeVisible();
+        await expect(this.editToolTip).toHaveAttribute('title','Edit');
+
     }
- 
 
    
+
 }

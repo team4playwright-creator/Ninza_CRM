@@ -1,41 +1,50 @@
-//import { test, expect } from '@playwright/test';
-//import { baseTest} from '../tests/baseTest';
-//import { loginPage } from '../pages/loginPage';
-//import testData from '../test-data/testdata.json';
-//import { campaignPage } from '../pages/campaignPage';
-//import{navigationPage} from '../pages/navigationPage';
-
+// import testData from '../../testdata/config.json';
+// import {test} from '../../fixtures/crmUI.fixture';
 import { test, expect } from '../../Fixtures/fixtures';
-//import {  loginPage, leadsPage, campaignPage, navigationPage, selectcampaignPage, testData } from '../../pages';
-
-
 
 
 test.describe('Campaign Tests', () => {
 
+//Test Case 1
+test('Create Campaign Successfully', async ({navigationPage,loggedIn, campaignPage,campaignConfig }) => {
+    
+    await navigationPage.clickCampaign();
 
-
-
-test('Campaign Page',async({navigationPage,loggedIn})=>{
- 
-  await navigationPage.clickCampaign();
-});
-
-
-test('Create Campaign',async({navigationPage,loggedIn, campaignPage,testData})=>{
- 
-  const campaignName = `Campaign${Math.random().toString(36).replace(/[^a-zA-Z]/g, '').substring(0,5)}`;
-  await navigationPage.clickCampaign();
-
-  await campaignPage.createCampaignPage();
-  await campaignPage.formFill(testData.campaign,campaignName);
-  await campaignPage.clickSubmit();
-  //await campaignPage.selectDate("2026-03-10");
-  await campaignPage.waitForTable();
-  await campaignPage.validateLeadInTable(campaignName);
+    const randomStr = Math.random().toString(36).replace(/[^a-z]/g, '').substring(0, 6);
+    const name=`${campaignConfig.campaignName}${randomStr}`;
+   
+    await campaignPage.createcampaign(name, campaignConfig.targetSize);
+    //Validation
+    await campaignPage.validateCreateCampaign(name);
 
 });
 
+//Test Case 2
+test('Search Campaign using Id', async ({navigationPage,loggedIn, campaignPage,campaignConfig }) => {
+      
+    await navigationPage.clickCampaign();
 
+    //search campaign
+    await campaignPage.searchcampaign(campaignConfig.campaignId);
 
-})
+    //Validation
+    await campaignPage.validateSearchCampaign(campaignConfig.campaignId);
+     
+});
+
+//Test Case 3
+test("Test Tool Tip",async({navigationPage,loggedIn, campaignPage,campaignConfig}) => {
+    
+    await navigationPage.clickCampaign();
+    //search campaign
+    await campaignPage.searchcampaign(campaignConfig.campaignId);
+
+    //Validation
+    await campaignPage.validateSearchCampaign(campaignConfig.campaignId);
+
+    //ToolTip Verification
+    await campaignPage.tooltipVerification();
+    
+});
+
+});
