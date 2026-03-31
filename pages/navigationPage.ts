@@ -5,12 +5,15 @@ export class navigationPage extends basePage {
     readonly campaign: Locator;
     readonly leads: Locator;
     readonly contactsTab: Locator;
+    readonly opportunitiesTab: Locator;
 
     constructor(page: Page) {
         super(page);
         this.campaign = page.locator("//a[text()='Campaigns']");
         this.leads = page.locator("//a[text()='Leads']");
         this.contactsTab = this.page.getByRole('link', { name: 'Contacts' });
+        this.opportunitiesTab = page.locator('a.nav-link[href="/opportunities"]'); //added
+       
  }
 
     async clickCampaign() {
@@ -26,4 +29,8 @@ export class navigationPage extends basePage {
 
       await this.contactsTab.click();
   }
+//added
+   async clickOpportunities() {
+        await this.click(this.opportunitiesTab);
+    }
 }
