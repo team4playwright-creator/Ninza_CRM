@@ -22,3 +22,4 @@ export { CreateContactPage } from './contact/CreateContactPage';
 
 export { ContactPageFactory } from '../pageFactory/ContactPageFactory';
 export { ContactApi } from '../api/ContactApi';
+export { opportunityPage } from '../pages/opportunityPage'; //added

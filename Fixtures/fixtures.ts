@@ -6,7 +6,7 @@ import { test as base, TestInfo } from '@playwright/test';
 //import { campaignPage } from '../pages/campaignPage';
 import testData from '../test-data/testdata.json';
 import campaignConfig from '../test-data/campaignConfig.json';
-import { loginPage, leadsPage, navigationPage,selectcampaignPage, campaignPage, ContactPageFactory} from '../pages/index'; 
+import { loginPage, leadsPage, navigationPage,selectcampaignPage, campaignPage, ContactPageFactory, opportunityPage} from '../pages/index'; 
 
 type MyFixtures = {
   loginPage: loginPage;
@@ -19,8 +19,8 @@ type MyFixtures = {
   testData: typeof testData;
   campaignConfig: typeof campaignConfig;
   contactPageFactory: ContactPageFactory;
-};
-
+  opportunityPage: opportunityPage;
+}
 export const test = base.extend<MyFixtures>({
     loginPage: async ({ page }, use) => { //data fixture
         await use(new loginPage(page));
@@ -48,6 +48,10 @@ export const test = base.extend<MyFixtures>({
 
       contactPageFactory: async ({ page }, use) => {
         await use(new ContactPageFactory(page));
+      },
+
+      opportunityPage: async ({ page }, use) => {
+        await use(new opportunityPage(page));
       },
 
       loggedIn: async ({ page }, use) => { //Behavior Fixture
