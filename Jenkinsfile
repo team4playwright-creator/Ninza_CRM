@@ -1,49 +1,82 @@
 pipeline {
-agent any
-environment {
-BASE_URL = credentials('BASE_URL')
-CRM_USERNAME = credentials('PIPE_CRM_USERNAME')
-CRM_PASSWORD = credentials('PIPE_CRM_PASS')
-}
-stages {
-stage('Install Dependencies') {
-steps {
-echo 'Installing dependencies...'
-bat 'npm install'
-}
-}
-stage('Run Tests') {
-steps {
-echo 'Running tests...'
-catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-bat 'npm test'
-}
-}
-}
-}
-post {
-always {
-publishHTML([
-allowMissing: true,
-alwaysLinkToLastBuild: true,
-keepAll: true,
-reportDir: 'html-report',
-reportFiles: 'index.html',
-reportName: 'Playwright HTML Report'
-])
-allure([
-includeProperties: false,
-jdk: '',
-reportBuildPolicy: 'ALWAYS',
-results: [[path: 'allure-results']]
-])
-}
-success {
-echo 'Pipeline succeeded!'
-}
-failure {
-echo 'Pipeline failed!'
-}
-}
-}
+    agent any
 
+    tools {
+        allure 'allure'   //this links Jenkins tool
+    }
+    
+    stages {
+
+        stage('Checkout') {
+            steps {
+                // SCM already checks out code, but this ensures credentials usage
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm install'
+            }
+        }
+
+        stage('Run Playwright Tests') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'base-url', variable: 'BASE_URL'),
+                    string(credentialsId: 'PIPE_CRM_USERNAME', variable: 'CRM_USERNAME'),
+                    string(credentialsId: 'PIPE_CRM_PASS', variable: 'CRM_PASSWORD')
+                ]) {
+
+                    bat """
+                    echo BASE_URL=%BASE_URL%
+                    echo USERNAME=%CRM_USERNAME%
+
+                    npx playwright test
+                    """
+                }
+            }
+        }
+
+        stage('Generate Allure Report') {
+            steps {
+                //bat "allure generate allure-results --clean -o allure-report"
+                   allure([
+            includeProperties: false,
+            jdk: '',
+            results: [[path: 'allure-results']]
+        ])
+            }
+        }
+
+
+    }
+
+    post {
+        always {
+
+            // ✅ Playwright HTML Report
+            publishHTML([
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright Report',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: false
+            ])
+
+            // ✅ Publish Allure HTML report
+            publishHTML([
+                reportDir: 'allure-report',
+                reportFiles: 'index.html',
+                reportName: 'Allure Report',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: true
+            ])
+
+            // ✅ Archive report files
+            archiveArtifacts artifacts: 'allure-report/**', allowEmptyArchive: true
+        }
+    }
+}
