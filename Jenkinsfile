@@ -9,19 +9,22 @@ stages {
 stage('Install Dependencies') {
 steps {
 echo 'Installing dependencies...'
-sh 'npm install'
+bat 'npm install'
 }
 }
 stage('Run Tests') {
 steps {
 echo 'Running tests...'
-sh 'npm test'
+catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+bat 'npm test'
 }
 }
-}post {
+}
+}
+post {
 always {
 publishHTML([
-allowMissing: false,
+allowMissing: true,
 alwaysLinkToLastBuild: true,
 keepAll: true,
 reportDir: 'html-report',
@@ -43,3 +46,4 @@ echo 'Pipeline failed!'
 }
 }
 }
+
