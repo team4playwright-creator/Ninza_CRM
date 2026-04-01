@@ -57,7 +57,7 @@ pipeline {
 
             // ✅ Playwright HTML Report
             publishHTML([
-                reportDir: 'playwright-report',
+                reportDir: 'html-report',
                 reportFiles: 'index.html',
                 reportName: 'Playwright Report',
                 keepAll: true,
